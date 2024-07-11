@@ -14,12 +14,14 @@ class CodeStorage(models.Model):
     active = models.BooleanField(default=True)
 
     @classmethod
-    def search_by_slug(cls, slug):
+    def search_by_slug(cls, slug, password=None):
         try:
             storage = cls.objects.get(slug=slug)
             if not storage.active:
                 raise Exception
             if storage.expiration is not None and timezone.now() > storage.expiration:
+                raise Exception
+            if storage.password and password!=storage.password:
                 raise Exception
             return storage
         except:
