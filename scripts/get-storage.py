@@ -1,0 +1,28 @@
+import requests
+
+def main():
+    try:
+        slug = str(input('Slug do conteudo: '))
+        password = str(input('Senha: '))
+        if password:
+            params = {
+                'slug': slug,
+                'password': password
+            }
+        else:
+            params = {
+                'slug': slug
+            }
+
+        response = requests.get('http://127.0.0.1:8000/api/storage/', params=params)
+    
+        if response.status_code == 200:
+            content = response.json()
+            print(content)
+        else:
+            print('Erro: ', response.status_code)
+    except:
+        print('Erro ao conectar com servidor')
+
+if __name__=='__main__':
+    main()
