@@ -18,3 +18,19 @@ def explore(request):
 
     return JsonResponse({'data': formatted_data})
 
+@require_http_methods(["GET", "POST"])
+def storage(request):
+    if request.method == 'GET':
+        slug = request.GET.get('slug')
+        password = request.GET.get('password', None)
+        storage = CodeStorage.search_by_slug(slug, password=password)
+        if storage:
+            storage.increase_view()
+            data = {
+                'creation': storage.created.strftime("%H:%M %d/%m"),
+                'title': storage.title,
+                'content': storage.content,
+                'views': storage.views
+            }
+            return JsonResponse(data)
+
