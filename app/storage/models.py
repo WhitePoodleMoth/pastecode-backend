@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 
@@ -15,6 +16,11 @@ class CodeStorage(models.Model):
     @classmethod
     def search_by_slug(cls, slug):
         try:
-            return cls.objects.get(slug=slug)
+            storage = cls.objects.get(slug=slug)
+            if not storage.active:
+                raise Exception
+            if storage.expiration is not None and timezone.now() > storage.expiration:
+                raise Exception
+            return storage
         except:
             return False
