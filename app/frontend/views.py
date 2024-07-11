@@ -4,7 +4,8 @@ from storage.models import CodeStorage
 # Create your views here.
 
 def search(request, slug):
-    storage = CodeStorage.search_by_slug(slug)
+    password = request.GET.get('password', None)
+    storage = CodeStorage.search_by_slug(slug, password=password)
     if storage:
         return HttpResponse(storage.content)
     else:
