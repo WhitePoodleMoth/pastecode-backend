@@ -27,3 +27,7 @@ class CodeStorage(models.Model):
             return storage
         except:
             return False
+    
+    def increase_view(self):
+        self.views = self.views + 1
+        self.save()
