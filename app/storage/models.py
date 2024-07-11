@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.db.models import Q
 
 # Create your models here.
 
@@ -13,6 +14,15 @@ class CodeStorage(models.Model):
     password = models.CharField(max_length=50, null=True, blank=True)
     active = models.BooleanField(default=True)
     views = models.IntegerField(default=0)
+
+    @classmethod
+    def most_recent(cls, amount=10):
+        now = timezone.now()
+        return cls.objects.filter(
+            Q(expiration__isnull=True) | Q(expiration__gt=now),
+            active=True,
+            password=None,
+        ).order_by('-created')[:amount]
 
     @classmethod
     def search_by_slug(cls, slug, password=None):
