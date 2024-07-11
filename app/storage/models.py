@@ -12,6 +12,7 @@ class CodeStorage(models.Model):
     content = models.TextField(max_length=25000)
     password = models.CharField(max_length=50, null=True, blank=True)
     active = models.BooleanField(default=True)
+    views = models.IntegerField(default=0)
 
     @classmethod
     def search_by_slug(cls, slug, password=None):
