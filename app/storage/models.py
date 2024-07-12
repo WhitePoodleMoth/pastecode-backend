@@ -1,8 +1,14 @@
 from django.db import models
 from django.utils import timezone
 from django.db.models import Q
+import random
+import string
 
 # Create your models here.
+
+def generate_random_slug(length=15):
+    characters = string.ascii_letters + string.digits  # Letras maiúsculas e minúsculas + números
+    return ''.join(random.choices(characters, k=length))
 
 class CodeStorage(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -14,6 +20,10 @@ class CodeStorage(models.Model):
     password = models.CharField(max_length=50, null=True, blank=True)
     active = models.BooleanField(default=True)
     views = models.IntegerField(default=0)
+
+    @classmethod
+    def create_storage(cls, title, content, password=None):
+        return cls.objects.create(slug=generate_random_slug(), title=title, content=content, password=password)
 
     @classmethod
     def most_recent(cls, amount=10):
