@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from storage.models import CodeStorage
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 # Create your views here.
 
@@ -18,6 +20,7 @@ def explore(request):
 
     return JsonResponse({'data': formatted_data})
 
+@csrf_exempt
 @require_http_methods(["GET", "POST"])
 def storage(request):
     if request.method == 'GET':
@@ -34,3 +37,16 @@ def storage(request):
             }
             return JsonResponse(data)
 
+    elif request.method == 'POST':
+        data = json.loads(request.body)
+        title = data.get('title')
+        content = data.get('content')
+        password = data.get('password', None)
+        
+        if not all([title, content]):
+            return JsonResponse({'error': 'Campos obrigatórios ausentes'}, status=400)
+
+        result = CodeStorage.create_storage(title, content, password)
+        if result:
+            return JsonResponse({'slug': result.slug, 'message': 'Dados salvos com sucesso'}, status=201)
+        return JsonResponse({'error': 'Problema ao criar registro'}, status=500)
